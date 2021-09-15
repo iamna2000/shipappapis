@@ -46,3 +46,13 @@ class Rating(models.Model):
     rating = models.DecimalField(decimal_places=0, max_digits=5)
     post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class Post_tags(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
+    tag = models.ForeignKey(Tag, on_delete=models.SET_NULL, null=True)
