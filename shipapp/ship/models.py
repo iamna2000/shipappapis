@@ -32,6 +32,7 @@ class Post(models.Model):
     active = models.BooleanField(default=True)
     good = models.ForeignKey(Good, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    tags = models.ManyToManyField('Tag' ,blank=True, null=True)
 
 class Comment(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
@@ -46,3 +47,9 @@ class Rating(models.Model):
     rating = models.DecimalField(decimal_places=0, max_digits=5)
     post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
