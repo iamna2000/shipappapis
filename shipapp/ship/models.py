@@ -12,44 +12,50 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-class Good(models.Model):
-    name = models.CharField(null=False, max_length=150)
-    description = models.TextField(null=True, blank=True)
+class ModelBase(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
+
+    class Meta:
+        abstract = True
+
+class Good(ModelBase):
+    class Meta :
+        ordering = ["-id"]
+    name = models.CharField(null=False, max_length=150)
+    description = models.TextField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    image = models.ImageField(upload_to='uploads/%Y/%m')
+    image = models.ImageField(upload_to='goods/%Y/%m')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.name
 
-class Post(models.Model):
+class Post(ModelBase):
     title = models.CharField(max_length=150, null=False)
     image = models.ImageField(upload_to='uploads/%Y/%m')
     content = models.TextField(null=False, blank=False)
-    created_date = models.DateTimeField(auto_now_add=True)
-    active = models.BooleanField(default=True)
     completed = models.BooleanField(default=False)
-    good = models.ForeignKey(Good, on_delete=models.SET_NULL, null=True)
+    receipt_point = models.ManyToManyField('Place', related_name="receipt_point", blank=False, null=False)
+    delivery_point = models.ManyToManyField('Place', related_name="delivery_point", blank=False, null=False)
+    good = models.ForeignKey(Good, on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    tags = models.ManyToManyField('Tag', blank=True, null=True)
 
-class Comment(models.Model):
-    created_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.user.username + " --> " + self.good.name
+
+class Comment(ModelBase):
     content = models.TextField(null=True, blank=True)
     post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
     shipper = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
 class Rating(models.Model):
-    created_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
     rating = models.DecimalField(decimal_places=0, max_digits=5)
     shipper = models.ForeignKey(User, related_name="shipper", on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(User, related_name="user", on_delete=models.CASCADE, null=True)
 
-class Tag(models.Model):
+class Place(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):

@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import viewsets, permissions, generics
 from rest_framework.parsers import MultiPartParser
-from .models import Post, User
-from .serializers import PostSerializer, UserSerializer
+from .models import Category, Good, Post, User, Place
+from .serializers import CategorySerializer, GoodSerializer, PostSerializer, PlaceSerializer, UserSerializer
+from .paginator import BasePaginator
 
 # Create your views here.
 
@@ -28,10 +29,40 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'list':
-            return [permissions.AllowAny]
+            return [permissions.AllowAny()]
 
-        return [permissions.IsAuthenticated]
+        return [permissions.IsAuthenticated()]
 
+class GoodViewSet(viewsets.ModelViewSet):
+    queryset = Good.objects.filter(active=True)
+    serializer_class = GoodSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'list':
+            return [permissions.AllowAny()]
+
+        return [permissions.IsAuthenticated()]
+
+class PlaceViewSet(viewsets.ModelViewSet,
+                      generics.ListAPIView):
+    serializer_class = PlaceSerializer
+    pagination_class = BasePaginator
+
+    def get_queryset(self):
+        # places = Place.objects.filter(active = True)
+        places = Place.objects.all()
+
+        q = self.request.query_params.get('q')
+        if q is not None:
+            places = places.filter(name__icontains=q)
+
+        return places
+
+class CategoryViewSet(viewsets.ModelViewSet,
+                      generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 def index(request):
     return render(request, template_name='index.html', context={
