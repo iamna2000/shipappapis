@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'oauth2_provider',
     'drf_yasg',
+    'corsheaders',
+
 ]
 
 REST_FRAMEWORK = {
@@ -53,6 +55,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -60,10 +63,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'shipapp.urls'
 
+CORS_ORIGIN_ALLOW_ALL = True
+
+OAUTH2_INFO =  {
+    "client_id" : "pGIRU9Njt8d5t9JDitDr7GDpnYdSh82FG3GZwnmR",
+    "client_secret" : "wUIwQeWIxx9xoVGzKYcsNAvMRqAoG5Ei9eP89ztg1B3KhVrbHCZNL2sCpimP5QMYoMNAXJDvB6FcOFZItVUEERObf2yOaaN5Oben1byYIh660m11aj6JHg7N3z1Bn1Bj"
+}
 
 TEMPLATES = [
     {
@@ -136,7 +146,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-MEDIA_ROOT = '%s/ship/static' % BASE_DIR
+MEDIA_ROOT = '%s/ship/static/' % BASE_DIR
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
